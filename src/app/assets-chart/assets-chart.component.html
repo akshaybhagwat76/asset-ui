@@ -11,12 +11,29 @@
 <div id="controls" style="width: 100%; overflow: hidden;">
 
   <div style="float: right; margin-right: 15px;">
-    <div class="btn-group" role="group" aria-label="Basic example">
-  <button id="minute" class="btn btn-primary">Minute</button>
-  <button id="hour" class="btn btn-primary">Hour</button>
-  <button id="day" class="btn btn-primary">Day</button>
-  <button id="month" class="btn btn-primary">Month</button>
+    
+      <button type="button" id="previous" class="btn btn-success">Prev</button>
+   
+<div class="btn-group" data-toggle="buttons">
+
+  <label class="btn btn-primary">
+    <input type="radio" name="options" id="minute"> Minute
+  </label>
+  <label class="btn btn-primary">
+    <input type="radio" name="options" id="hour"> Hour
+  </label>
+  <label class="btn btn-primary">
+    <input type="radio" name="options" id="day"> Day
+  </label>
+  <label class="btn btn-primary" active>
+    <input type="radio" name="options" id="month" checked> Month
+  </label>
+
 </div>
+
+  <button type="button" id="next" class="btn btn-success">Next</button>
+
+
   </div>
   </div>
 <div id="chartdiv">

@@ -27,13 +27,15 @@ chart.paddingRight = 40;
 var data = [];
 var value = 50;
 var value2 = 50;
-for (let i = -730; i < 0; i++) {
+for (let i = -365; i < 0; i++) {
   for(let j = 0; j < 24; j++)
+  {
+    for(let k = 0; k < 60; k+=10)
   {
     let date = new Date();
   
   date.setDate(i);
-  date.setHours(j, 0, 0, 0);
+  date.setHours(j, k, 0, 0);
   value -= Math.round((Math.random() < 0.5 ? 1 : -1) * Math.random() * 10);
   if (value < 0) {
     value = Math.round(Math.random() * 10);
@@ -43,7 +45,7 @@ for (let i = -730; i < 0; i++) {
     value2 = Math.round(Math.random() * 10);
   }
   data.push({ date: date, value: value,unit:'kwh', value2: value2,unit2:'mwh'  });
-  
+}
 } 
 }
 
@@ -61,7 +63,7 @@ for (let i = -730; i < 0; i++) {
 //   data.push({ date2: date, value2: value,unit2:'mwh' });
 // } 
 // }
-console.log(JSON.stringify(data));
+
 
 chart.data = data;
 
@@ -69,13 +71,13 @@ var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
 dateAxis.renderer.grid.template.location = 0;
 dateAxis.renderer.labels.template.fill = am4core.color("#e59165");
 dateAxis.groupData=true;
-dateAxis.groupCount=12;
+dateAxis.groupCount=13;
 
 var dateAxis2 = chart.xAxes.push(new am4charts.DateAxis());
 dateAxis2.renderer.grid.template.location = 0;
 dateAxis2.renderer.labels.template.fill = am4core.color("#dfcc64");
 dateAxis2.groupData=true;
-dateAxis2.groupCount=12;
+dateAxis2.groupCount=13;
 
 var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 valueAxis.tooltip.disabled = true;
@@ -168,11 +170,109 @@ document.getElementById("chkStack").addEventListener("change", function() {
 
   }
 });
+var lastValue=0;
+var selectedItem="month";
+document.getElementById("previous").addEventListener("click", function() {
+  if(selectedItem==="minute")
+  {
+    var last=new Date(lastValue).setDate(new Date(lastValue).getDate() - 7);
+    lastValue=last;
+    var newData=data.filter(x=>x.date.getTime()>=last);
+    chart.data=newData; 
+  }
+  else if(selectedItem==="hour")
+  {
+    var last=new Date(lastValue).setDate(new Date(lastValue).getDate() - 7);
+ lastValue=last;
+ var newData=data.filter(x=>x.date.getTime()>=last);
+
+ chart.data=newData; 
+
+  }
+  else if(selectedItem==="day")
+  {
+  var last=new Date(lastValue).setDate(new Date(lastValue).getDate() - 30);
+  lastValue=last;
+  var newData=data.filter(x=>x.date>=last);
+  chart.data=newData; 
+
+  }
+  else if(selectedItem==="month")
+  {
+
+  }
+});
+document.getElementById("next").addEventListener("click", function() {
+  if(selectedItem==="minute")
+  {
+    var last=new Date(lastValue).setDate(new Date(lastValue).getDate() + 7);
+    lastValue=last;
+    var newData=data.filter(x=>x.date.getTime()>=last);
+    chart.data=newData; 
+  }
+  else if(selectedItem==="hour")
+  {
+    var last=new Date(lastValue).setDate(new Date(lastValue).getDate() + 7);
+ lastValue=last;
+ var newData=data.filter(x=>x.date.getTime()>=last);
+
+ chart.data=newData; 
+
+  }
+  else if(selectedItem==="day")
+  {
+  var last=new Date(lastValue).setDate(new Date(lastValue).getDate() + 30);
+  lastValue=last;
+  var newData=data.filter(x=>x.date>=last);
+  chart.data=newData; 
+
+  }
+  else if(selectedItem==="month")
+  {
+
+  }
+});
 
 document.getElementById("minute").addEventListener("click", function() {
- //var newData=data.filter();
- //chart.data=newData; 
+  selectedItem="minute";
+  var last=new Date().setDate(new Date().getDate() - 8);
+  lastValue=last;
+  var newData=data.filter(x=>x.date.getTime()>=last);
+ dateAxis.groupCount=60*24;
+ dateAxis2.groupCount=60*24;
+  chart.data=newData; 
+ });
+
+document.getElementById("hour").addEventListener("click", function() {
+  selectedItem="hour";
+ var last=new Date().setDate(new Date().getDate() - 8);
+ lastValue=last;
+ var newData=data.filter(x=>x.date.getTime()>=last);
+dateAxis.groupCount=24*7;
+dateAxis2.groupCount=24*7;
+ chart.data=newData; 
 });
+
+document.getElementById("day").addEventListener("click", function() {
+  selectedItem="day";
+  var last=new Date().setDate(new Date().getDate() - 30);
+  lastValue=last;
+  var newData=data.filter(x=>x.date>=last);
+ dateAxis.groupCount=30;
+ dateAxis2.groupCount=30;
+  chart.data=newData; 
+ });
+
+ document.getElementById("month").addEventListener("click", function() {
+  selectedItem="month";
+  var last=new Date().setDate(new Date().getMonth() - 365);
+  lastValue=last;
+  var newData=data.filter(x=>x.date>=last);
+  
+ dateAxis.groupCount=13;
+ dateAxis2.groupCount=13;
+  chart.data=newData; 
+ });
 
   }
   }
