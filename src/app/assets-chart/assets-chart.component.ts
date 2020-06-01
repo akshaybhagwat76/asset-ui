@@ -172,28 +172,36 @@ document.getElementById("chkStack").addEventListener("change", function() {
 });
 var lastValue=0;
 var selectedItem="month";
+updateFields();
 document.getElementById("previous").addEventListener("click", function() {
   if(selectedItem==="minute")
   {
     var last=new Date(lastValue).setDate(new Date(lastValue).getDate() - 7);
+    
+    var newData=data.filter(x=>x.date.getTime()>=last && x.date.getTime()<=lastValue);
     lastValue=last;
-    var newData=data.filter(x=>x.date.getTime()>=last);
+    dateAxis.groupCount=6*24*7;
+    dateAxis2.groupCount=6*24*7;
     chart.data=newData; 
   }
   else if(selectedItem==="hour")
   {
-    var last=new Date(lastValue).setDate(new Date(lastValue).getDate() - 7);
+    var last=new Date(lastValue).setDate(new Date(lastValue).getDate() - 30);
+    var newData=data.filter(x=>x.date.getTime()>=last && x.date.getTime()<=lastValue);
  lastValue=last;
- var newData=data.filter(x=>x.date.getTime()>=last);
-
+ dateAxis.groupCount=24*31;
+ dateAxis2.groupCount=24*31;
  chart.data=newData; 
 
   }
   else if(selectedItem==="day")
   {
   var last=new Date(lastValue).setDate(new Date(lastValue).getDate() - 30);
+ 
+  var newData=data.filter(x=>x.date>=last && x.date.getTime()<=lastValue);
   lastValue=last;
-  var newData=data.filter(x=>x.date>=last);
+  dateAxis.groupCount=30*2;
+ dateAxis2.groupCount=30*2;
   chart.data=newData; 
 
   }
@@ -201,29 +209,40 @@ document.getElementById("previous").addEventListener("click", function() {
   {
 
   }
+  updateFields();
 });
 document.getElementById("next").addEventListener("click", function() {
   if(selectedItem==="minute")
   {
     var last=new Date(lastValue).setDate(new Date(lastValue).getDate() + 7);
+    
+    var newData=data.filter(x=>x.date.getTime()>=last && x.date.getTime()<=new Date(last).setDate(new Date(last).getDate() + 7));
     lastValue=last;
-    var newData=data.filter(x=>x.date.getTime()>=last);
+    dateAxis.groupCount=6*24*7;
+    dateAxis2.groupCount=6*24*7;
     chart.data=newData; 
   }
   else if(selectedItem==="hour")
   {
-    var last=new Date(lastValue).setDate(new Date(lastValue).getDate() + 7);
- lastValue=last;
- var newData=data.filter(x=>x.date.getTime()>=last);
+    var last=new Date(lastValue).setDate(new Date(lastValue).getDate() + 30);
 
+ 
+ var newData=data.filter(x=>x.date.getTime()>=last && x.date.getTime()<=new Date(last).setDate(new Date(last).getDate() + 7));
+ lastValue=last;
+
+ dateAxis.groupCount=24*31;
+ dateAxis2.groupCount=24*31;
  chart.data=newData; 
 
   }
   else if(selectedItem==="day")
   {
   var last=new Date(lastValue).setDate(new Date(lastValue).getDate() + 30);
+  
+  var newData=data.filter(x=>x.date>=last && x.date.getTime()<=new Date(last).setDate(new Date(last).getDate() + 30));
   lastValue=last;
-  var newData=data.filter(x=>x.date>=last);
+  dateAxis.groupCount=30*2;
+ dateAxis2.groupCount=30*2;
   chart.data=newData; 
 
   }
@@ -231,6 +250,7 @@ document.getElementById("next").addEventListener("click", function() {
   {
 
   }
+  updateFields();
 });
 
 document.getElementById("minute").addEventListener("click", function() {
@@ -238,29 +258,32 @@ document.getElementById("minute").addEventListener("click", function() {
   var last=new Date().setDate(new Date().getDate() - 8);
   lastValue=last;
   var newData=data.filter(x=>x.date.getTime()>=last);
- dateAxis.groupCount=60*24;
- dateAxis2.groupCount=60*24;
+ dateAxis.groupCount=6*24*8;
+ dateAxis2.groupCount=6*24*8;
   chart.data=newData; 
+  updateFields();
  });
 
 document.getElementById("hour").addEventListener("click", function() {
   selectedItem="hour";
- var last=new Date().setDate(new Date().getDate() - 8);
+ var last=new Date().setDate(new Date().getDate() - 31);
  lastValue=last;
  var newData=data.filter(x=>x.date.getTime()>=last);
-dateAxis.groupCount=24*7;
-dateAxis2.groupCount=24*7;
+dateAxis.groupCount=24*31;
+dateAxis2.groupCount=24*31;
  chart.data=newData; 
+ updateFields();
 });
 
 document.getElementById("day").addEventListener("click", function() {
   selectedItem="day";
-  var last=new Date().setDate(new Date().getDate() - 30);
+  var last=new Date().setDate(new Date().getDate() - 31);
   lastValue=last;
   var newData=data.filter(x=>x.date>=last);
- dateAxis.groupCount=30;
- dateAxis2.groupCount=30;
+ dateAxis.groupCount=31;
+ dateAxis2.groupCount=31;
   chart.data=newData; 
+  updateFields();
  });
 
  document.getElementById("month").addEventListener("click", function() {
@@ -272,7 +295,25 @@ document.getElementById("day").addEventListener("click", function() {
  dateAxis.groupCount=13;
  dateAxis2.groupCount=13;
   chart.data=newData; 
+  updateFields();
  });
+ var inputFieldFormat = "yyyy-MM-dd";
+ dateAxis.events.on("selectionextremeschanged", function() {
+  updateFieldsZoom();
+});
+
+dateAxis.events.on("extremeschanged", updateFieldsZoom);
+ function updateFields() {
+ // document.getElementById("fromfield").innerText = chart.data[0].date.toDateString();
+ // document.getElementById("tofield").innerText = chart.data[chart.data.length-1].date.toDateString();
+  
+}
+
+function updateFieldsZoom() {
+  var minZoomed = dateAxis.minZoomed + am4core.time.getDuration(dateAxis.mainBaseInterval.timeUnit, dateAxis.mainBaseInterval.count) * 0.5;
+  document.getElementById("fromfield").innerText = chart.dateFormatter.format(minZoomed, inputFieldFormat);
+  document.getElementById("tofield").innerText = chart.dateFormatter.format(new Date(dateAxis.maxZoomed), inputFieldFormat);
+}
 
   }
   }
